@@ -29,5 +29,3 @@ A listagem consome `GET http://localhost:7071/api/GetItens`. Se a Function estiv
 2. Tela de detalhe via `GET /api/GetItemPorId/{id}`
 3. Formulário de cadastro que grava no mock local (`localStorage`)
 
-## IA utilizada
-Ver Prompt.md
