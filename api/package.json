@@ -1,0 +1,9 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "description": "Azure Functions mock — Loja do Campus",
+  "scripts": {
+    "start": "func start",
+    "start:local": "node local-server.js"
+  }
+}
