@@ -1,20 +1,30 @@
-import { useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
-import { inserirProduto } from "../data/produtosApi"
+import { useEffect, useState } from "react"
+import { Link, useNavigate, useParams } from "react-router-dom"
+import { alterarProduto, obterProduto } from "../data/produtosApi"
 
-const ESTADO_INICIAL = {
-  nome: "",
-  descricao: "",
-  categoria: "Papelaria",
-  preco: "",
-  estoque: "",
-}
-
-function Cadastro() {
+function Editar() {
+  const { id } = useParams()
   const navigate = useNavigate()
-  const [form, setForm] = useState(ESTADO_INICIAL)
+  const [form, setForm] = useState(null)
   const [erro, setErro] = useState("")
   const [salvando, setSalvando] = useState(false)
+
+  useEffect(() => {
+    obterProduto(id)
+      .then((item) => {
+        setForm({
+          nome: item.nome,
+          descricao: item.descricao,
+          categoria: item.categoria,
+          preco: String(item.preco),
+          estoque: String(item.estoque),
+        })
+      })
+      .catch((err) => {
+        console.error(err)
+        setErro("Não encontramos esse produto para editar.")
+      })
+  }, [id])
 
   function atualizar(evento) {
     const { name, value } = evento.target
@@ -23,44 +33,52 @@ function Cadastro() {
 
   async function enviar(evento) {
     evento.preventDefault()
-    if (!form.nome.trim() || !form.descricao.trim()) return
-
     setSalvando(true)
     setErro("")
     try {
-      const novo = await inserirProduto({
+      await alterarProduto(id, {
         nome: form.nome,
         descricao: form.descricao,
         categoria: form.categoria,
         preco: Number(form.preco),
         estoque: Number(form.estoque),
       })
-      navigate(`/item/${novo.id}`)
+      navigate(`/item/${id}`)
     } catch (err) {
       console.error(err)
-      setErro("Não foi possível salvar. Tente de novo em instantes.")
+      setErro("Não foi possível salvar as alterações.")
     } finally {
       setSalvando(false)
     }
   }
 
+  if (!form && !erro) {
+    return <p className="estado">Carregando…</p>
+  }
+
+  if (!form) {
+    return (
+      <section className="painel">
+        <h1>Não foi possível editar</h1>
+        <p className="lead">{erro}</p>
+        <Link className="btn btn-primary" to="/">
+          Voltar ao catálogo
+        </Link>
+      </section>
+    )
+  }
+
   return (
     <section className="painel">
-      <h1>Novo produto</h1>
-      <p className="lead">Preencha os dados para colocar o item no catálogo.</p>
+      <h1>Editar produto</h1>
+      <p className="lead">Ajuste o que precisar e salve quando estiver pronto.</p>
 
       {erro ? <p className="aviso">{erro}</p> : null}
 
       <form className="form" onSubmit={enviar}>
         <label>
           Nome
-          <input
-            name="nome"
-            value={form.nome}
-            onChange={atualizar}
-            placeholder="Ex.: Estojo compacto"
-            required
-          />
+          <input name="nome" value={form.nome} onChange={atualizar} required />
         </label>
 
         <label>
@@ -69,7 +87,6 @@ function Cadastro() {
             name="descricao"
             value={form.descricao}
             onChange={atualizar}
-            placeholder="O que vem no produto, tamanho, detalhes úteis…"
             rows="4"
             required
           />
@@ -96,7 +113,6 @@ function Cadastro() {
               step="0.01"
               value={form.preco}
               onChange={atualizar}
-              placeholder="29,90"
               required
             />
           </label>
@@ -110,7 +126,6 @@ function Cadastro() {
               step="1"
               value={form.estoque}
               onChange={atualizar}
-              placeholder="10"
               required
             />
           </label>
@@ -118,9 +133,9 @@ function Cadastro() {
 
         <div className="acoes">
           <button className="btn btn-primary" type="submit" disabled={salvando}>
-            {salvando ? "Salvando…" : "Salvar produto"}
+            {salvando ? "Salvando…" : "Salvar"}
           </button>
-          <Link className="btn btn-ghost" to="/">
+          <Link className="btn btn-ghost" to={`/item/${id}`}>
             Cancelar
           </Link>
         </div>
@@ -129,4 +144,4 @@ function Cadastro() {
   )
 }
 
-export default Cadastro
+export default Editar

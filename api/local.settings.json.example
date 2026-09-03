@@ -1,0 +1,12 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "",
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "MONGODB_URI": "mongodb+srv://arthuim_db_user:SUA_SENHA@cluster0.i7rlvm0.mongodb.net/lojaCampus?retryWrites=true&w=majority&appName=Cluster0"
+  },
+  "Host": {
+    "CORS": "*",
+    "CORSCredentials": false
+  }
+}

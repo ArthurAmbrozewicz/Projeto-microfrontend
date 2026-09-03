@@ -8,7 +8,7 @@ function Layout({ children }) {
           <span className="brand-mark">LC</span>
           <span>
             <strong>Loja do Campus</strong>
-            <small>Catálogo PJBL</small>
+            <small>Materiais e utilidades</small>
           </span>
         </Link>
 
@@ -16,7 +16,7 @@ function Layout({ children }) {
           <NavLink to="/" end>
             Catálogo
           </NavLink>
-          <NavLink to="/novo">Novo produto</NavLink>
+          <NavLink to="/novo">Adicionar</NavLink>
         </nav>
       </header>
 

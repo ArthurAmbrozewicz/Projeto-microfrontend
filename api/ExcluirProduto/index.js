@@ -1,7 +1,6 @@
-const { getCollection, toProduto, parseObjectId } = require("../shared/mongo")
+const { getCollection, parseObjectId } = require("../shared/mongo")
 const { ok, fail, handleOptions } = require("../shared/http")
 
-// Mantida por compatibilidade — prefira PesquisarProdutos/{id}
 module.exports = async function (context, req) {
   if (handleOptions(context, req)) return
 
@@ -13,14 +12,16 @@ module.exports = async function (context, req) {
     }
 
     const col = await getCollection()
-    const doc = await col.findOne({ _id: objectId })
-    if (!doc) {
+    const result = await col.deleteOne({ _id: objectId })
+
+    if (result.deletedCount === 0) {
       fail(context, 404, "Produto não encontrado")
       return
     }
-    ok(context, toProduto(doc))
+
+    ok(context, { ok: true, id: req.params.id })
   } catch (err) {
     context.log.error(err)
-    fail(context, 500, err.message || "Erro ao buscar produto")
+    fail(context, 500, err.message || "Erro ao excluir produto")
   }
 }

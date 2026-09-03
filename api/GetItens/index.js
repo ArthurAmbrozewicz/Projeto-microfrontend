@@ -1,12 +1,16 @@
-const itens = require("../shared/itens")
+const { getCollection, toProduto } = require("../shared/mongo")
+const { ok, fail, handleOptions } = require("../shared/http")
 
-module.exports = async function (context) {
-  context.res = {
-    status: 200,
-    headers: {
-      "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*",
-    },
-    body: itens,
+// Mantida por compatibilidade — prefira PesquisarProdutos
+module.exports = async function (context, req) {
+  if (handleOptions(context, req)) return
+
+  try {
+    const col = await getCollection()
+    const docs = await col.find({}).sort({ nome: 1 }).toArray()
+    ok(context, docs.map(toProduto))
+  } catch (err) {
+    context.log.error(err)
+    fail(context, 500, err.message || "Erro ao listar produtos")
   }
 }
